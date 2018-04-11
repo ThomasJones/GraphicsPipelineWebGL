@@ -1,17 +1,28 @@
 function initApp(canvas) {
     var gl = canvas.getContext('experimental-webgl');
 
-    var positions = [-1, -1, -1, 1, -1, -1, 1, 1, -1];
-    var colors = [1, 0, 0, 0, 1, 0, 0, 0, 1];
-    var indices = [0, 1, 2];
+    var positions = [-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0];
+    var colors = [1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1];
+    var indices = [0, 1, 2, 0, 2, 3];
+
+    var onUpdate = function (transform) {
+        transform.translate(new Vector(0.01, 0, 0));
+        transform.rotate(matrixCreateRotateZ(1));
+    };
 
     var geometry = new Geometry(gl, positions, colors, indices);
     var surface = new Surface(gl, geometry);
     var sceneObjects = [];
-    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(0,0,0))));
-    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(5,0,0))));
-    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(-3,-3,0))));
-    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(-3,3,-3))));
+    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(0, 0, 0)).setRotation(matrixCreateRotateZ(90)), new Color(1, 0, 0), onUpdate));
+    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(5, 0, 0)).setScale(new Vector(2, 0.5, 1)), new Color(0, 1, 0), onUpdate));
+    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(-3, -3, 0)), new Color(0, 0, 1)));
+    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(-3, 3, -3)), new Color(1, 0, 1)));
+    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(-3, 4, 3)), new Color(0, 1, 1)));
+    sceneObjects.push(new SceneObject(geometry, surface,
+        new Transform(new Vector(0, -4, 0))
+            .setScale(new Vector(10, 10, 10))
+            .setRotation(matrixCreateRotateX(90))
+        , new Color(0.3, 0.3, 0.3)));
 
     /*========================= MATRIX ========================= */
 
@@ -25,10 +36,10 @@ function initApp(canvas) {
         ];
     }
 
-    var proj_matrix = get_projection(40, canvas.width / canvas.height, 1, 100);
-    var view_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-    view_matrix[14] = view_matrix[14] - 6; //zoom
-
+    var camera_angles = [0, 0];
+    var camera_pos = new Vector(0, 0, -6);
+    var proj_matrix = get_projection(60, canvas.width / canvas.height, 1, 100);
+    proj_matrix = matrixTranspose(proj_matrix);
 
     var time_old = 0;
     var renderFrame = function (time) {
@@ -42,25 +53,30 @@ function initApp(canvas) {
         gl.viewport(0.0, 0.0, canvas.width, canvas.height);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+        var cam_yaw = matrixCreateRotateY(camera_angles[0]);
+        var cam_pitch = matrixCreateRotateX(camera_angles[1]);
+        var cam_rotation = matrixMultiply(cam_pitch, cam_yaw);
+        var view_matrix = new Transform(camera_pos).setRotation(cam_rotation).toMatrix();
 
-        sceneObjects.forEach( obj => obj.update(dt));
-        sceneObjects.forEach( obj => obj.render(view_matrix, proj_matrix));
+        sceneObjects.forEach(obj => obj.update(dt));
+        sceneObjects.forEach(obj => obj.render(view_matrix, proj_matrix));
 
         window.requestAnimationFrame(renderFrame);
     };
 
     renderFrame(0);
-}
 
-function rotateZ(m, angle) {
-    var c = Math.cos(angle);
-    var s = Math.sin(angle);
-    var mv0 = m[0], mv4 = m[4], mv8 = m[8];
-
-    m[0] = c * m[0] - s * m[1];
-    m[4] = c * m[4] - s * m[5];
-    m[8] = c * m[8] - s * m[9];
-    m[1] = c * m[1] + s * mv0;
-    m[5] = c * m[5] + s * mv4;
-    m[9] = c * m[9] + s * mv8;
+    window.addEventListener("keydown", function (event) {
+        var key = String.fromCharCode(event.which);
+        if (key === "A") camera_pos.x += 1;
+        if (key === "D") camera_pos.x -= 1;
+        if (key === "W") camera_pos.z += 1;
+        if (key === "S") camera_pos.z -= 1;
+        if (key === "E") camera_pos.y += 1;
+        if (key === "Q") camera_pos.y -= 1;
+        if (event.which == 37) camera_angles[0] -= 1; //left
+        if (event.which == 38) camera_angles[1] += 1; //up
+        if (event.which == 39) camera_angles[0] += 1; //right
+        if (event.which == 40) camera_angles[1] -= 1; //down
+    });
 }
