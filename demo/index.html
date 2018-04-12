@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+<style>
+    .btn-group button {
+        display: block; /* Make the buttons appear below each other */
+    }
+</style>
 <head>
     <meta charset="UTF-8">
     <title>Demo</title>
@@ -8,17 +13,32 @@
     <script src="geometry.js" type="application/javascript"></script>
     <script src="surface.js" type="application/javascript"></script>
     <script src="scene.js" type="application/javascript"></script>
+    <script src="projection.js" type="application/javascript"></script>
     <script src="app.js" type="application/javascript"></script>
     <script src="hello_webgl.js" type="application/javascript"></script>
 </head>
 <body>
-    <canvas width="800" height="600" id="glCanvas"></canvas>
+    <canvas width="800" height="500" id="glCanvas"></canvas>
+    <div class="btn-group">
+        <button onclick="clickOrthographic()">Orthographic</button>
+        <button onclick="clickPerspective()">Perspective</button>
+    </div>
     <script>
+        var app = null;
         window.onload = function () {
             var canvas = document.getElementById('glCanvas');
             //helloWebGL(canvas, window)
-            initApp(canvas, window)
+            app = initApp(canvas, window)
+        };
+
+        function clickOrthographic() {
+            app.clickOrthographic();
         }
+
+        function clickPerspective() {
+            app.clickPerspective();
+        }
+
     </script>
 
 </body>

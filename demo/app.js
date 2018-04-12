@@ -47,21 +47,9 @@ function initApp(canvas) {
     sceneObjects.push(matrixObj1);
     sceneObjects.push(matrixObj2);
 
-
-    function get_projection(angle, a, zMin, zMax) {
-        var ang = Math.tan((angle * .5) * Math.PI / 180);//angle*.5
-        return [
-            0.5 / ang, 0, 0, 0,
-            0, 0.5 * a / ang, 0, 0,
-            0, 0, -(zMax + zMin) / (zMax - zMin), -1,
-            0, 0, (-2 * zMax * zMin) / (zMax - zMin), 0
-        ];
-    }
-
     var camera_angles = [0, 0];
     var camera_pos = new Vector(0, 0, -6);
-    var proj_matrix = get_projection(60, canvas.width / canvas.height, 1, 100);
-    proj_matrix = Matrix.transpose(proj_matrix);
+    var proj_matrix = Projection.perspective(canvas.width, canvas.height, 60, 1, 100);
 
     var time_old = 0;
     var frame = 0;
@@ -107,4 +95,13 @@ function initApp(canvas) {
         if (event.which == 39) camera_angles[0] += 1; //right
         if (event.which == 40) camera_angles[1] -= 1; //down
     });
+
+    this.clickOrthographic = function() {
+        proj_matrix = Projection.orthographic(canvas.width, canvas.height, 11);
+    };
+
+    this.clickPerspective = function() {
+        proj_matrix = Projection.perspective(canvas.width, canvas.height, 60, 1, 100);
+    };
+
 }
