@@ -29,6 +29,37 @@ function degToRad(deg) {
     return deg * Math.PI / 180
 }
 
+/**
+ * Sequence of transforms applied to a matrix in a builder-like fashion, making it easy to chain them together.
+ */
+function MatrixBuilder() {
+    this.m = Matrix.identity();
+    this.translate = function (x, y, z) {
+        this.m = Matrix.multiply(Matrix.translate(new Vector(x, y, z)), this.m);
+        return this;
+    };
+
+    this.rotateZ = function (theta) {
+        this.m = Matrix.multiply(Matrix.rotateZ(theta), this.m);
+        return this;
+    };
+
+    this.rotateX = function (theta) {
+        this.m = Matrix.multiply(Matrix.rotateX(theta), this.m);
+        return this;
+    };
+
+    this.rotateY = function (theta) {
+        this.m = Matrix.multiply(Matrix.rotateY(theta), this.m);
+        return this;
+    };
+
+    this.scale = function (x, y, z) {
+        this.m = Matrix.multiply(Matrix.scale(new Vector(x, y, z)), this.m);
+        return this;
+    };
+}
+
 Matrix = {};
 Matrix.identity = function () {
     return [1, 0, 0, 0,
@@ -100,7 +131,7 @@ Matrix.rotateZ = function (theta) {
         0, 0, 0, 1]
 };
 
-Matrix.translate = function(translation) {
+Matrix.translate = function (translation) {
     return [1, 0, 0, translation.x,
         0, 1, 0, translation.y,
         0, 0, 1, translation.z,

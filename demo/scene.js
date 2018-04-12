@@ -9,8 +9,21 @@ function SceneObject(geometry, surface, transform, color, onUpdate = null) {
         this.matrix = transform.toMatrix();
     };
 
-    this.render = function (view_matrix, proj_matrix) {
-        surface.apply(new ObjectProperties(this.matrix, color), new SceneProperties(view_matrix, proj_matrix));
+    this.render = function (sceneProperties) {
+        surface.apply(new ObjectProperties(this.matrix, color), sceneProperties);
         geometry.render()
     }
+}
+
+/**
+ * Object in the scene that simply has a matrix that is set externally.
+ */
+function MatrixSceneObject(geometry, surface, matrix, color) {
+    this.matrix = matrix;
+    this.update = function (dt) {};
+
+    this.render = function (sceneProperties) {
+        surface.apply(new ObjectProperties(this.matrix, color), sceneProperties);
+        geometry.render()
+    };
 }
