@@ -27,6 +27,7 @@ function Surface(gl, geometry) {
         'gl_Position = vec4(position, 1.) * Mmatrix * Vmatrix * Pmatrix;' +
         'vColor = color * objectColor;' +       // TODO - just preventing warnings for now.
         'vColor = objectColor;' +
+        //'vColor = color;' +
         '}';
 
     var fragCode = 'precision mediump float;' +

@@ -30,3 +30,49 @@ function Geometry(gl, positions, colors, indices) {
     };
 }
 
+GeometryFactory = {};
+
+GeometryFactory.makeQuad = function (gl) {
+    var positions = [-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0];
+    var colors = [1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1];
+    var indices = [0, 1, 2, 0, 2, 3];
+    return new Geometry(gl, positions, colors, indices);
+};
+
+GeometryFactory.makeCube = function (gl) {
+    var positions = [
+        -1, -1, 1,
+        1, -1, 1,
+        1, 1, 1,
+        -1, 1, 1,
+        -1, -1, -1,
+        1, -1, -1,
+        1, 1, -1,
+        -1, 1, -1];
+
+    var colors = [
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1,
+        1, 1, 1,
+        1, 1, 0,
+        1, 0, 1,
+        0, 1, 1,
+        0, 0, 0];
+
+    var indices = [
+        0, 1, 2,
+        0, 2, 3,
+        1, 5, 6,
+        2, 1, 6,
+        0, 1, 5,
+        5, 4, 0,
+        0, 3, 7,
+        7, 4, 0,
+        2, 6, 7,
+        7, 3, 2,
+        4, 5, 6,
+        6, 7, 4];
+
+    return new Geometry(gl, positions, colors, indices);
+};

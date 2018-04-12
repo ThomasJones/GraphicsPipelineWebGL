@@ -1,25 +1,24 @@
 function initApp(canvas) {
     var gl = canvas.getContext('experimental-webgl');
 
-    var positions = [-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0];
-    var colors = [1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1];
-    var indices = [0, 1, 2, 0, 2, 3];
-
     var onUpdate = function (transform) {
-        transform.translate(new Vector(0.01, 0, 0));
-        transform.rotate(Matrix.rotateZ(1));
+        transform.translate(new Vector(0.005, 0, 0));
+        transform.rotate(Matrix.rotateZ(-1));
     };
 
-    var geometry = new Geometry(gl, positions, colors, indices);
-    var surface = new Surface(gl, geometry);
+    var quad = GeometryFactory.makeQuad(gl);// new Geometry(gl, positions, colors, indices);
+    var cube = GeometryFactory.makeCube(gl);
+    var surface = new Surface(gl, quad);
+    var cubeSurface = new Surface(gl, cube);
     var sceneObjects = [];
-    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(0, 0, 0)).setRotation(Matrix.rotateZ(90)), new Color(1, 0, 0), onUpdate));
-    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(5, 0, 0)).setScale(new Vector(2, 0.5, 1)), new Color(0, 1, 0), onUpdate));
-    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(-3, -3, 0)), new Color(0, 0, 1)));
-    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(-3, 3, -3)), new Color(1, 0, 1)));
-    sceneObjects.push(new SceneObject(geometry, surface, new Transform(new Vector(-3, 4, 3)), new Color(0, 1, 1)));
-    sceneObjects.push(new SceneObject(geometry, surface,
-        new Transform(new Vector(0, -4, 0))
+    sceneObjects.push(new SceneObject(quad, surface, new Transform(new Vector(0, 0, 0)).setRotation(Matrix.rotateZ(90)), new Color(1, 0, 0), onUpdate));
+    sceneObjects.push(new SceneObject(quad, surface, new Transform(new Vector(5, 0, 0)).setScale(new Vector(2, 0.5, 1)), new Color(0, 1, 0), onUpdate));
+    sceneObjects.push(new SceneObject(cube, cubeSurface, new Transform(new Vector(-3, -3, 0)), new Color(0, 0, 1)));
+    sceneObjects.push(new SceneObject(quad, surface, new Transform(new Vector(-3, 3, -3)), new Color(1, 0, 1)));
+    sceneObjects.push(new SceneObject(quad, surface, new Transform(new Vector(-3, 4, 3)), new Color(0, 1, 1)));
+    sceneObjects.push(new SceneObject(cube, cubeSurface, new Transform(new Vector(-1, -2, -2)).setScale(new Vector(3, 1, 0.5)), new Color(1, 0.75, 0), onUpdate));
+    sceneObjects.push(new SceneObject(quad, surface,
+        new Transform(new Vector(0, -5, 0))
             .setScale(new Vector(10, 10, 10))
             .setRotation(Matrix.rotateX(90))
         , new Color(0.3, 0.3, 0.3)));
